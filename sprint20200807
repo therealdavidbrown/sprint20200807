@@ -1,0 +1,41 @@
+import tweepy
+from tweepy import OAuthHandler
+import json
+import pandas as pd
+import matplotlib.pyplot as plt
+consumer_key = '31jRwW85KJX4bAaiDH6GRmAcW'
+consumer_secret = 'KyTXUfISM3gZB3zWcFSoa6LyQbMoqD9wcxABFX1elDzUsxubDX'
+access_token = '1220418621198995456-UIiMdHsK9mtGL40onPXGiN4Wwln0Bo'
+access_secret = 'KeYLseNUHewHJWbbwa35ONYz6umzMRy3yw6sOZOYOov1K'
+
+auth = OAuthHandler(consumer_key, consumer_secret)
+auth.set_access_token(access_token, access_secret)
+api = tweepy.API(auth)
+
+cumu = 0
+cumuList =[]
+timeList = []
+
+def process_or_store(tweet):
+    print(json.dumps(tweet))
+    
+for tweet in tweepy.Cursor(api.user_timeline).items():
+    #process_or_store(tweet._json)
+    timeList.append(tweet.created_at)
+    #print(tweet.created_at)
+    cumu += 1
+    cumuList.append(cumu)
+    #print(cumu)
+    
+#for friend in tweepy.Cursor(api.friends).items():
+   # print(friend.text)
+timeList.reverse()
+data = {"Tweets" : cumuList,
+       "Time" : timeList}
+
+df = pd.DataFrame(data, columns = ["Tweets", "Time"])
+plt.plot(timeList, cumuList)
+plt.title("David Brown's Tweets Over Time")
+plt.xlabel("Time")
+plt.ylabel("Cumulative Tweets")
+plt.show()
